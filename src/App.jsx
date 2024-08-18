@@ -1,33 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <header>
+        <h1>Investigación sobre Hábitos de Lectura y Conocimiento de Cultura General</h1>
+        <h2>Ezequiel Mastropietro</h2>
+      </header>
+
+      <main>
+        <section className="1">
+          <p>Completa una breve encuesta y mide tu conocimiento de cultura general con una trivia.</p>
+          <button>Comenzar</button>
+        </section>
+        <section className="2">
+          <p>Esta investigación busca explorar la relación entre los hábitos de lectura y el conocimiento de cultura general en alumnos de secundaria.<br />¡Tu participación es clave para comprender mejor este tema! </p>
+        </section>
+      </main>
+
+      <footer>
+        <p>Para mas información puedes contactarme en <a href="mailto:emastropietro@northfield.edu.ar">emastropietro@northfield.edu.ar</a></p>
+      </footer>
     </>
   )
 }
