@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function Home() {
   return (
     <>
@@ -9,7 +11,7 @@ export default function Home() {
       <main>
         <section className="1">
           <p>Completa una breve encuesta y mide tu conocimiento de cultura general con una trivia.</p>
-          <a href='/mail'>Comenzar</a>
+          <Link to={'/mail'}>Comenzar</Link>
         </section>
         <section className="2">
           <p>Esta investigación busca explorar la relación entre los hábitos de lectura y el conocimiento de cultura general en alumnos de secundaria.<br />¡Tu participación es clave para comprender mejor este tema! </p>
