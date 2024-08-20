@@ -1,0 +1,6 @@
+.selected{
+  background-color: red;
+}
+.disabled{
+  opacity: 0.5;
+}
