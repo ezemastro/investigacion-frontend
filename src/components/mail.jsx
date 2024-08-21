@@ -34,6 +34,7 @@ export default function Mail() {
     fetch( BACKEND_URL + '/mail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({email, age}),
     }).then(res => {
       if (res.status >= 200 && res.status < 300) return navigate('/encuesta')

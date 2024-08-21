@@ -5,7 +5,6 @@ import SurveyInput from './surveyInput'
 
 export default function Encuesta() {
   const navigate = useNavigate()
-  const [authorized, setAuthorized] = useState(false)
   const [questions, setQuestions] = useState([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [ready, setReady] = useState(false)
@@ -13,14 +12,7 @@ export default function Encuesta() {
   const [error, setError] = useState(false)
   
   useEffect(() => {
-    fetch('/check', { method: 'GET' }).then(res => {
-      if (res.ok) setAuthorized(true)
-      else navigate('/')
-    })
-  }, [navigate])
-  useEffect(() => {
-    if (!authorized) return
-    fetch(BACKEND_URL + '/survey', { method: 'GET' }).then(res => {
+    fetch(BACKEND_URL + '/survey', { method: 'GET', credentials: 'include' }).then(res => {
       if (res.ok) {
         res.json().then( q => {
           setQuestions(q)
@@ -31,13 +23,12 @@ export default function Encuesta() {
         })
       }
     })
-  }, [authorized])
+  }, [])
 
   const semiSubmit = (ans) => {
     setQuestionToSend(prevQuestions => {
       let mdQ = [...prevQuestions];
       mdQ[currentQuestion].response = ans
-      console.log(ans)
       return mdQ
     })
   }
@@ -57,29 +48,29 @@ export default function Encuesta() {
   }
   const handleSend = () => {
     if (!ready) return
+    console.log(questionToSend)
     fetch(BACKEND_URL + '/survey', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
+      credentials: 'include',
       body: JSON.stringify(questionToSend)
     }).then(res => {
       if (res.ok) navigate('/trivia')
-      else setError(true) 
-    }).catch(err => {
-      console.log(err)
-      setError(true)
+      else navigate('/')
+    }).catch(() => {
+      navigate('/')
     })
   }
   return (
     <>
-      {!authorized && <p className='error'>No autorizado</p>}
       <header>
         <h1>Encuesta sobre hábitos de lectura</h1>
       </header>
       <main>
         <section>
-          {authorized && questions && currentQuestion < questions.length && (
+          {questions && currentQuestion < questions.length && (
             <>
               <h2>{questions[currentQuestion].question_text}</h2>
               <SurveyInput question={questions[currentQuestion]} semiSubmit={semiSubmit} defAnswer={questionToSend[currentQuestion].response} currentQuestion={currentQuestion}/>
