@@ -99,6 +99,7 @@ export default function Trivia() {
         
       } else getNewQuestion()
     }, 1500)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nPlayed])
   const handleCategoryClick = (e) => {
           let findThisCategory = categories.find(cat => cat.category_name === e.target.textContent).category_id
@@ -111,6 +112,7 @@ export default function Trivia() {
         document.querySelectorAll('.category-btn').forEach(btn => {
           btn.addEventListener('click', handleCategoryClick)
         })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[bonusCategory])
 
   const startTimer = () => {
