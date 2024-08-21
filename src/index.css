@@ -4,3 +4,9 @@
 .disabled{
   opacity: 0.5;
 }
+.correct{
+  background-color: green;
+}
+.incorrect{
+  background-color: red;
+}
