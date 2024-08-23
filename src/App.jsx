@@ -4,6 +4,7 @@ import Mail from './components/mail.jsx'
 import Encuesta from './components/encuesta.jsx'
 import Trivia from './components/trivia.jsx'
 import ErrorPage from './components/errorPage.jsx'
+import './index.css'
 
 function App() {
 
