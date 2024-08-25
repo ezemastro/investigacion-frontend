@@ -1,10 +1,16 @@
+/* eslint-disable react/prop-types */
 import { useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import { z } from 'zod'
 import { BACKEND_URL } from '../constants.js'
 import '../css/email.css'
+import Loading from './loading.jsx'
 
 export default function Email() {
+  const [loading, setLoading] = useState(false)
+  const startLoading = () => setLoading(true)
+  const stopLoading = () => setLoading(false)
+  
   const navigate = useNavigate()
   const [correctEmail, setCorrectEmail] = useState(undefined)
   const [correctAge, setCorrectAge] = useState(undefined)
@@ -32,15 +38,27 @@ export default function Email() {
       else setCorrectEmail(true)
       return
     }  
+
+    startLoading()
     fetch( BACKEND_URL + '/mail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({email, age}),
     }).then(res => {
-      if (res.status >= 200 && res.status < 300) return navigate('/encuesta')
-      else setError(res.status)
-    }).catch(err => console.log(err))
+      if (res.status >= 200 && res.status < 300){
+        stopLoading()
+        console.log("navigating")
+        navigate('/encuesta')
+      }
+      else {
+        stopLoading()
+        setError(res.status)
+      }
+    }).catch(err => {
+      stopLoading()
+      console.log(err)
+    })
   }
   const handleSubmitKey = (e) => {
     if (e.key === 'Enter') handleSubmit()
@@ -48,6 +66,7 @@ export default function Email() {
 
   return (
     <>
+    {loading && <Loading />}
     <div className="e-main-cont main-cont main-bkgc">
       <h1 className="e-h1">Ingrese su correo electrónico y su edad</h1>
       <div className="e-inputs-cont">

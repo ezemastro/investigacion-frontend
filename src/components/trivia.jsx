@@ -1,21 +1,29 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { BACKEND_URL, AMMOUNT_OF_QUESTIONS, TIME_PER_QUESTION } from '../constants'
 import '../css/trivia.css'
-
-//falta:
-//  lograr que se guarde en local storage
-//  played no se está enviando bien porque hay preguntas qeu se repiten
+import confetti from "canvas-confetti"
+import Loading from "./loading"
 
 export default function Trivia() {
+  const [loading, setLoading] = useState(false)
+  const startLoading = () => setLoading(true)
+  const stopLoading = () => setLoading(false)
+
   const [categories, setCategories] = useState([])
   const [currentQuestion, setCurrentQuestion] = useState({})
   const [nextQuestion, setNextQuestion] = useState({})
   const [rndSortOptions, setRndSortOptions] = useState([])
   const [secondsLeft, setSecondsLeft] = useState(TIME_PER_QUESTION)
   const [pickingBonusCat, setPickingBonusCat] = useState(false)
+  const [toSend, setToSend] = useState([])
+  const [played, setPlayed] = useState([])
+  const [bonusCategory, setBonusCategory] = useState(undefined)
+
   const timerRef = useRef(null)
   const navigate = useNavigate()
+  const playedRef = useRef([])
 
   const fetching = async ({fetchThisN}) => {
     let cats
@@ -29,23 +37,26 @@ export default function Trivia() {
     fetchThisN = fetchThisN ?? 0
     const question1Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN % cats.length].category_id}`, { method: 'POST', credentials: 'include', 
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({played})
+      body: JSON.stringify({played: playedRef.current})
     })
+    stopLoading()
     if (!question1Res.ok) return
     const question1 = await question1Res.json()
     setCurrentQuestion(question1)
     setRndSortOptions([...question1.options].sort(() => Math.random() - 0.5))
     const question2Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN + 1 % cats.length].category_id}`, { method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({played})
+      body: JSON.stringify({played: playedRef.current})
     })
     if (!question2Res.ok) return
     const question2 = await question2Res.json()
     setNextQuestion(question2)
   }
+
   useEffect(() => {
     //inicar
     if (categories.length > 0) return
+    startLoading()
     fetching({})
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -67,19 +78,20 @@ export default function Trivia() {
         setSecondsLeft(0)
       }
     }, 250)
+    return () => clearInterval(timerRef.current)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion])
   
-  let toSend = []
-  let played = []
   const handleAnswerSubmit = ({ e, currentQuestion }) => {
+    let updatedToSend = [...toSend]
     //si viene de un boton
     if(e){
       if (currentQuestion.options.findIndex(option => option === e.target.textContent) === 0){
         //corecta !
+        confetti()
         e.target.classList.add('correct')
         document.querySelectorAll('button').forEach(btn => btn !== e.target && btn.classList.add('disabled'))
-        toSend = [...toSend, {question_id: currentQuestion.question_id, is_correct: true, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}]
+        updatedToSend.push({question_id: currentQuestion.question_id, is_correct: true, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)})
       } else {
         //incorrecta
         e.target.classList.add('incorrect')
@@ -88,7 +100,7 @@ export default function Trivia() {
           if(btn === e.target) return 
           btn.classList.add('disabled')
         })
-        toSend =[...toSend, {question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}]
+        updatedToSend.push({question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)})
       }
     } else {
       //si no viene de un boton
@@ -97,8 +109,10 @@ export default function Trivia() {
         btn.classList.add('disabled')
       })
       //preparar set to send
-      toSend = ([...toSend, {question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}])
+      updatedToSend.push({question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)})
     }
+
+    setToSend(updatedToSend)
 
     //guardar played
     addToPlayed(currentQuestion)
@@ -108,9 +122,15 @@ export default function Trivia() {
     setNPlayed(nPlayed => nPlayed + 1)
   }
   const addToPlayed = (currentQuestion) => {
-    const playedI = played.findIndex(pl => pl.category_id === currentQuestion.category_id)
-    if (playedI === -1) played.push({ category_id: currentQuestion.category_id, questions_id: [currentQuestion.question_id] })
-    else played[playedI].questions_id.push(currentQuestion.question_id)
+    const playedI = playedRef.current.findIndex(pl => pl.category_id === currentQuestion.category_id)
+    let updatedPlayed = [...playedRef.current]
+    if (playedI === -1) {
+      updatedPlayed.push({ category_id: currentQuestion.category_id, questions_id: [currentQuestion.question_id] })
+    } else {
+      updatedPlayed[playedI].questions_id.push(currentQuestion.question_id)
+    }
+    playedRef.current = updatedPlayed
+    setPlayed(updatedPlayed)
   }
 
   useEffect(() => {
@@ -121,6 +141,8 @@ export default function Trivia() {
         //bonus
         setPickingBonusCat(true)
       } else if (nPlayed >= AMMOUNT_OF_QUESTIONS) {
+        //guardar en local storage
+        localStorage.setItem('trivaScore', JSON.stringify(toSendRef.current.filter(t => t.is_correct === true).length) / AMMOUNT_OF_QUESTIONS * 100)
         //mandar resultados
         fetch(BACKEND_URL + '/trivia/send', {
           method: 'POST',
@@ -129,14 +151,14 @@ export default function Trivia() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            results: toSend,
+            results: toSendRef.current,
             userInfo: {
-              bonus_category_id: bonusCategory
+              bonus_category_id: bonusCategoryRef.current
             }
           })
         }).then(res => {
           if(!res.ok) return //error
-          navigate('/gracias')
+          navigateRef.current('/gracias')
         })
       } else {
         getNewQuestion()
@@ -145,6 +167,26 @@ export default function Trivia() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nPlayed])
 
+
+  const toSendRef = useRef(toSend)
+  const navigateRef = useRef(navigate)
+  const bonusCategoryRef = useRef(bonusCategory)
+  
+  useEffect(() => {
+    toSendRef.current = toSend
+  }, [toSend])
+  
+  useEffect(() => {
+    navigateRef.current = navigate
+  }, [navigate])
+  
+  useEffect(() => {
+    bonusCategoryRef.current = bonusCategory
+  }, [bonusCategory])
+
+  useEffect(() => {
+    playedRef.current = played
+  }, [played])
 
   const getNewQuestion = async (fetchThis) => {
     //eliminar buton calses
@@ -159,15 +201,19 @@ export default function Trivia() {
       setRndSortOptions([...nextQuestion.options].sort(() => Math.random() - 0.5))
     }
 
-    //fetch
+    //fetch if is not last
+    if (nPlayed === (AMMOUNT_OF_QUESTIONS - 2)) return
+
+    if(fetchThis !== undefined) startLoading()
     let newQuestion = await fetch(BACKEND_URL + `/trivia?category_id=${fetchThis ?? categories[(categories.findIndex(cat => cat.category_id === currentQuestion.category_id) + 2) % categories.length].category_id}`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        played
+        played: playedRef.current
       })
     })
+    stopLoading()
     if(!newQuestion.ok) return //error
     newQuestion = await newQuestion.json()
     if(fetchThis !== undefined) {
@@ -185,17 +231,18 @@ export default function Trivia() {
   }
 
   //pregunta bonus
-  let bonusCategory = undefined
   const handleCategoryClick = (e) => {
     let selectedCategory = categories.find(cat => cat.category_name === e.target.textContent).category_id
     setPickingBonusCat(false)
-    bonusCategory = selectedCategory
+    setBonusCategory(selectedCategory)
     getNewQuestion(selectedCategory)
   }
-  //-----------------------
+  
+  
 
   return (
     <div className="main-cont t-main-cont main-bkgc">
+      {loading && <Loading />}
       <header className="t-header">
         <h1>Trivia de Conocimiento General</h1>
       </header>

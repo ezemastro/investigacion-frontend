@@ -5,8 +5,18 @@ import Encuesta from './components/encuesta.jsx'
 import Trivia from './components/trivia.jsx'
 import ErrorPage from './components/errorPage.jsx'
 import './index.css'
+import Gracias from './components/gracias.jsx'
+import { useState } from 'react'
 
 function App() {
+
+  const [loading, setLoading] = useState(false)
+  const startLoading = () => {
+    setLoading(true)
+  }
+  const stopLoading = () => {
+    setLoading(false)
+  }
 
   const router = createBrowserRouter([
     {
@@ -16,15 +26,19 @@ function App() {
     },
     {
       path: '/mail',
-      element: <Email />
+      element: <Email startLoading={startLoading} stopLoading={stopLoading} />
     },
     {
       path: '/encuesta',
-      element: <Encuesta />
+      element: <Encuesta startLoading={startLoading} stopLoading={stopLoading} />
     },
     {
       path: '/trivia',
-      element: <Trivia />
+      element: <Trivia startLoading={startLoading} stopLoading={stopLoading} />
+    },
+    {
+      path: '/gracias',
+      element: <Gracias />
     }
   ])
 

@@ -1,0 +1,41 @@
+.g-score-cont *{
+  font-family: "Roboto Mono", monospace;
+}
+.g-score-cont{
+  width: 80dvw;
+  max-width: 200px;
+  position: relative;
+}
+.g-score-sect{
+  max-height: 400px;
+  flex-grow: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.g-main-cont{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.g-main-cont>h1{
+  font-size: 3rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  flex-basis: content;
+  flex-grow: 1;
+  max-height: 200px;
+}
+.g-score-sect h2{
+  font-size: 2rem;
+  text-align: center;
+  font-weight: 400;
+  color: #2B2D42;
+}
+.g-main-cont .btn{
+  margin: 20px 5px;
+}

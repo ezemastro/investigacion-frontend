@@ -1,10 +1,16 @@
+/* eslint-disable react/prop-types */
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { BACKEND_URL } from '../constants'
 import SurveyInput from './surveyInput'
 import '../css/encuesta.css'
+import Loading from './loading'
 
 export default function Encuesta() {
+  const [loading, setLoading] = useState(false)
+  const startLoading = () => setLoading(true)
+  const stopLoading = () => setLoading(false)
+
   const navigate = useNavigate()
   const [questions, setQuestions] = useState([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -13,7 +19,9 @@ export default function Encuesta() {
   const [error, setError] = useState(false)
   
   useEffect(() => {
+    startLoading()
     fetch(BACKEND_URL + '/survey', { method: 'GET', credentials: 'include' }).then(res => {
+      stopLoading()
       if (res.ok) {
         res.json().then( q => {
           setQuestions(q)
@@ -22,8 +30,11 @@ export default function Encuesta() {
             response: undefined
           })))
         })
+      } else {
+        setError(true)
       }
     })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const semiSubmit = (ans) => {
@@ -49,7 +60,7 @@ export default function Encuesta() {
   }
   const handleSend = () => {
     if (!ready) return
-    console.log(questionToSend)
+    startLoading()
     fetch(BACKEND_URL + '/survey', {
       method: 'POST',
       headers: {
@@ -58,14 +69,17 @@ export default function Encuesta() {
       credentials: 'include',
       body: JSON.stringify(questionToSend)
     }).then(res => {
-      if (res.ok) navigate('/trivia')
-      else navigate('/')
+      if (res.ok) return navigate('/trivia')
+      stopLoading()
+      navigate('/')
     }).catch(() => {
+      stopLoading()
       navigate('/')
     })
   }
   return (
     <>
+    {loading && <Loading />}
     <div className="en-main-cont main-cont main-bkgc">
       <header className='en-header'>
         <h1>Encuesta sobre hábitos de lectura</h1>
