@@ -1,0 +1,67 @@
+.h-main-cont{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.h-main-cont>*>*{
+  max-width: 800px;
+}
+.h-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 17px;
+  flex-basis: 200px;
+  flex-grow: 1;
+  max-height: 300px;
+}
+.h-header h2{
+  color: #8D99AE;
+}
+.h-section.n1 {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column;
+  flex-basis: 170px;
+  font-size: 1.25rem;
+  color: #2B2D42;
+  font-weight: 600;
+  flex-grow: 0.5;
+  max-height: 250px;
+}
+.h-section.n2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #EDF2F4;
+  font-size: 1rem;
+  font-weight: 200;
+  flex-basis: 100px;
+  flex-grow: 1;
+}
+.h-section.n2>p{
+  color: #EDF2F4;
+}
+.h-footer{
+  flex-grow: 0;
+  flex-basis: 25px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.correct{
+  background-color: #44ee44;
+  pointer-events: none;
+}
+.incorrect{
+  background-color: #ee4444;
+  pointer-events: none;
+}
+.disabled{
+  opacity: 0.5;
+  pointer-events: none;
+}

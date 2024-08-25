@@ -2,8 +2,9 @@ import { useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import { z } from 'zod'
 import { BACKEND_URL } from '../constants.js'
+import '../css/email.css'
 
-export default function Mail() {
+export default function Email() {
   const navigate = useNavigate()
   const [correctEmail, setCorrectEmail] = useState(undefined)
   const [correctAge, setCorrectAge] = useState(undefined)
@@ -47,25 +48,29 @@ export default function Mail() {
 
   return (
     <>
-      <h1>Ingrese su mail y su edad</h1>
-      <div className="input-cont">
-        <input type="email" id="email" ref={emailRef} onKeyDown={handleSubmitKey} />
-        {correctEmail === true && <img src="/src/assets/check.svg" alt="check" />}
-        {correctEmail === false && <img src="/src/assets/cross.svg" alt="cross" />}
+    <div className="e-main-cont main-cont main-bkgc">
+      <h1 className="e-h1">Ingrese su correo electrónico y su edad</h1>
+      <div className="e-inputs-cont">
+      <div className={`e-input-cont email ${correctEmail === true ? 'ok' : correctEmail === false ? 'notok' : ''}`}>
+        <input className='e-input' type="email" placeholder="Correo electrónico" id="email" ref={emailRef} onKeyDown={handleSubmitKey} />
+        <img className="check" src="/src/assets/check.svg" alt="check" />
+        <img className="cross" src="/src/assets/cross.svg" alt="cross" />
       </div>
-      <div className="input-cont">
-        <input type="number" id="age" ref={ageRef} onKeyDown={handleSubmitKey} />
-        {correctAge === true && <img src="/src/assets/check.svg" alt="check" />}
-        {correctAge === false && <img src="/src/assets/cross.svg" alt="cross" />}
+      <div className={`e-input-cont age ${correctAge === true ? 'ok' : correctAge === false ? 'notok' : ''}`}>
+        <input className='e-input' type="number" placeholder='Edad' id="age" ref={ageRef} onKeyDown={handleSubmitKey} />
+        <img className="check" src="/src/assets/check.svg" alt="check" />
+        <img className="cross" src="/src/assets/cross.svg" alt="cross" />
       </div>
-
-      <button className='btn' onClick={handleSubmit}>Comenzar</button>
-      {error !== 409 && <p className="error">Se ha producido un error, vuelva a intentarlo</p>}
+      </div>
+      {error && error !== 409 && <p className="error">Se ha producido un error, vuelva a intentarlo</p>}
       {error === 409 && <p className="error">Ya ha completado la encuesta</p>}
-      <div className='df aic'>
+
+      <button className='e-btn btn d' onClick={handleSubmit}>Comenzar</button>
+      <div className='e-info'>
         <img src="/src/assets/closed-eye.svg" alt="closed eye" />
-        <p>El mail no será almacenado, solo se usa para evitar múltiples respuestas</p>
+        <p>La dirección de correo electrónico no será almacenado, solo se usa para evitar múltiples respuestas</p>
         <img src="/src/assets/closed-eye.svg" alt="closed eye" />
+      </div>
       </div>
     </>
   )

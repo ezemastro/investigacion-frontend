@@ -1,0 +1,75 @@
+.e-main-cont{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.e-h1{
+  margin-bottom: 25px;
+}
+.e-input{
+  height: 30px;
+  font-size: 20px;
+  background-color: #EDF2F4;
+  border-radius: 3px;
+}
+.e-input, .e-input:active, .e-input:focus, .e-input:hover{
+  outline: none;
+  border: none;
+}
+.e-input#email{
+  width: 350px;
+}
+.e-input#age{
+  width: 70px;
+}
+.e-input-cont>img{
+  position: absolute;
+  right: -50px;
+  opacity: 0;
+}
+.e-input-cont{
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.e-inputs-cont{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.e-input-cont.notok>input{
+  outline: 2px solid #ee4444;
+}
+.e-input-cont.notok>img.cross{
+  opacity: 1;
+}
+.e-input-cont.ok>input{
+  outline: 2px solid #44ee44;
+}
+.e-input-cont.ok>img.check{
+  opacity: 1;
+}
+
+.e-btn{
+  width: 150px;
+  font-size: 1.25rem;
+  font-weight: 500 !important;
+  margin-bottom: 20px;
+}
+
+.e-info{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.e-info p{
+  color: #8D99AE;
+  text-wrap: wrap;
+}

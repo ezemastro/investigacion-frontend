@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from './components/home.jsx'
-import Mail from './components/mail.jsx'
+import Email from './components/email.jsx'
 import Encuesta from './components/encuesta.jsx'
 import Trivia from './components/trivia.jsx'
 import ErrorPage from './components/errorPage.jsx'
@@ -16,7 +16,7 @@ function App() {
     },
     {
       path: '/mail',
-      element: <Mail />
+      element: <Email />
     },
     {
       path: '/encuesta',

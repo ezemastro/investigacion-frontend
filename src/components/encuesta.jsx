@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { BACKEND_URL } from '../constants'
 import SurveyInput from './surveyInput'
+import '../css/encuesta.css'
 
 export default function Encuesta() {
   const navigate = useNavigate()
@@ -28,7 +29,7 @@ export default function Encuesta() {
   const semiSubmit = (ans) => {
     setQuestionToSend(prevQuestions => {
       let mdQ = [...prevQuestions];
-      mdQ[currentQuestion].response = ans
+      mdQ[currentQuestion].response = typeof ans === 'number' ? Math.round(ans) : ans
       return mdQ
     })
   }
@@ -65,33 +66,36 @@ export default function Encuesta() {
   }
   return (
     <>
-      <header>
+    <div className="en-main-cont main-cont main-bkgc">
+      <header className='en-header'>
         <h1>Encuesta sobre hábitos de lectura</h1>
       </header>
-      <main>
-        <section>
+      <main className='en-main'>
+        <section className='secn-bkgc en-section n1'>
           {questions && currentQuestion < questions.length && (
             <>
               <h2>{questions[currentQuestion].question_text}</h2>
               <SurveyInput question={questions[currentQuestion]} semiSubmit={semiSubmit} defAnswer={questionToSend[currentQuestion].response} currentQuestion={currentQuestion}/>
               <div className="progress-cont">
-                <div id="progress" style={{ position: 'relative' }}>
-                  <div id="progress-track" style={{ width: `${(questionToSend.filter(q => q.response !== undefined || q.response !== null).length / questions.length) * 100}%`, position: 'absolute' }}></div>
+                <div id="progress">
+                  <div id="progress-track" style={{ width: `${(questionToSend.filter(q => q.response !== undefined && q.response !== null).length / questions.length) * 100}%`}}></div>
                 </div>
                 <div className="progress-btn-cont">
-                  <button onClick={handleBack}><img src="../assets/arrow.svg" alt="arrow" style={{ transform: 'rotate(180deg)' }} /></button>
+                  <button onClick={handleBack} className={`${currentQuestion <= 0 ? 'disabled' : ''}`}><img src="./src/assets/arrow.svg" alt="arrow" style={{ transform: 'rotate(180deg)' }} /></button>
                   <p>{currentQuestion + 1} / {questions.length}</p>
-                  <button onClick={handleNext}><img src="../assets/arrow.svg" alt="arrow" /></button>
+                  <button onClick={handleNext} className={`${currentQuestion === questions.length - 1 ? 'disabled' : ''}`}><img src="./src/assets/arrow.svg" alt="arrow" /></button>
                 </div>
               </div>
             </>
           )}
         </section>
-        <section>
-          <button onClick={handleSend} className={!ready ? 'disabled' : ''}>Enviar</button>
+        <section className='en-section n2'>
+          <button onClick={handleSend} className={`btn en-btn d ${!ready ? 'disabled' : ''}`}>Enviar</button>
           {error && <p className='error'>Error al enviar encuesta</p>}
         </section>
       </main>
+      <footer></footer>
+    </div>
     </>
   )
 }
