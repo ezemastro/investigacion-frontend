@@ -30,7 +30,11 @@ export default function Trivia() {
     if(categories.length === 0) {
       //set categories
       const catsRes = await fetch(BACKEND_URL + '/trivia/categories', { method: 'GET', credentials: 'include' })
-      if (!catsRes.ok) return
+      if (!catsRes.ok) {
+        catsRes.json().then(err => {
+          err?.redirect && navigate(err.redirect)
+        })
+      }
       cats = await catsRes.json()
       setCategories(cats)
     } else cats = categories
@@ -40,7 +44,11 @@ export default function Trivia() {
       body: JSON.stringify({played: playedRef.current})
     })
     stopLoading()
-    if (!question1Res.ok) return
+    if (!question1Res.ok) {
+      question1Res.json().then(err => {
+        err?.redirect && navigate(err.redirect)
+      })
+    }
     const question1 = await question1Res.json()
     setCurrentQuestion(question1)
     setRndSortOptions([...question1.options].sort(() => Math.random() - 0.5))
@@ -157,7 +165,11 @@ export default function Trivia() {
             }
           })
         }).then(res => {
-          if(!res.ok) return //error
+          if(!res.ok) {
+            res.json().then(err => {
+              err?.redirect && navigate(err.redirect)
+            })
+          }
           navigateRef.current('/gracias')
         })
       } else {
@@ -214,7 +226,10 @@ export default function Trivia() {
       })
     })
     stopLoading()
-    if(!newQuestion.ok) return //error
+    if(!newQuestion.ok) {
+      newQuestion.json().then(err => {
+        err?.redirect && navigate(err.redirect)
+      })}
     newQuestion = await newQuestion.json()
     if(fetchThis !== undefined) {
       setCurrentQuestion(newQuestion)

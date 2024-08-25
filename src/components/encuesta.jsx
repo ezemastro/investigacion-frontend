@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useNavigate } from 'react-router-dom'
+import { redirect, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { BACKEND_URL } from '../constants'
 import SurveyInput from './surveyInput'
@@ -22,6 +22,11 @@ export default function Encuesta() {
     startLoading()
     fetch(BACKEND_URL + '/survey', { method: 'GET', credentials: 'include' }).then(res => {
       stopLoading()
+      if (res.status >= 400) {
+        res.json().then( err => {
+          err?.redirect && redirect(err.redirect)
+        })
+      }
       if (res.ok) {
         res.json().then( q => {
           setQuestions(q)
@@ -69,6 +74,11 @@ export default function Encuesta() {
       credentials: 'include',
       body: JSON.stringify(questionToSend)
     }).then(res => {
+      if (res.status >= 400) {
+        res.json().then( err => {
+          err?.redirect && redirect(err.redirect)
+        })
+      }
       if (res.ok) return navigate('/trivia')
       stopLoading()
       navigate('/')
