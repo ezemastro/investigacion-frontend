@@ -95,9 +95,9 @@ export default function Encuesta() {
                   <div id="progress-track" style={{ width: `${(questionToSend.filter(q => q.response !== undefined && q.response !== null).length / questions.length) * 100}%`}}></div>
                 </div>
                 <div className="progress-btn-cont">
-                  <button onClick={handleBack} className={`${currentQuestion <= 0 ? 'disabled' : ''}`}><img src="./src/assets/arrow.svg" alt="arrow" style={{ transform: 'rotate(180deg)' }} /></button>
+                  <button onClick={handleBack} className={`${currentQuestion <= 0 ? 'disabled' : ''}`}><img src="assets/arrow.svg" alt="arrow" style={{ transform: 'rotate(180deg)' }} /></button>
                   <p>{currentQuestion + 1} / {questions.length}</p>
-                  <button onClick={handleNext} className={`${currentQuestion === questions.length - 1 ? 'disabled' : ''}`}><img src="./src/assets/arrow.svg" alt="arrow" /></button>
+                  <button onClick={handleNext} className={`${currentQuestion === questions.length - 1 ? 'disabled' : ''}`}><img src="assets/arrow.svg" alt="arrow" /></button>
                 </div>
               </div>
             </>

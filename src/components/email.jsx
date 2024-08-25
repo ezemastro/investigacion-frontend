@@ -72,13 +72,13 @@ export default function Email() {
       <div className="e-inputs-cont">
       <div className={`e-input-cont email ${correctEmail === true ? 'ok' : correctEmail === false ? 'notok' : ''}`}>
         <input className='e-input' type="email" placeholder="Correo electrónico" id="email" ref={emailRef} onKeyDown={handleSubmitKey} />
-        <img className="check" src="/src/assets/check.svg" alt="check" />
-        <img className="cross" src="/src/assets/cross.svg" alt="cross" />
+        <img className="check" src="assets/check.svg" alt="check" />
+        <img className="cross" src="assets/cross.svg" alt="cross" />
       </div>
       <div className={`e-input-cont age ${correctAge === true ? 'ok' : correctAge === false ? 'notok' : ''}`}>
         <input className='e-input' type="number" placeholder='Edad' id="age" ref={ageRef} onKeyDown={handleSubmitKey} />
-        <img className="check" src="/src/assets/check.svg" alt="check" />
-        <img className="cross" src="/src/assets/cross.svg" alt="cross" />
+        <img className="check" src="assets/check.svg" alt="check" />
+        <img className="cross" src="assets/cross.svg" alt="cross" />
       </div>
       </div>
       {error && error !== 409 && <p className="error">Se ha producido un error, vuelva a intentarlo</p>}
@@ -86,9 +86,9 @@ export default function Email() {
 
       <button className='e-btn btn d' onClick={handleSubmit}>Comenzar</button>
       <div className='e-info'>
-        <img src="/src/assets/closed-eye.svg" alt="closed eye" />
+        <img src="assets/closed-eye.svg" alt="closed eye" />
         <p>La dirección de correo electrónico no será almacenado, solo se usa para evitar múltiples respuestas</p>
-        <img src="/src/assets/closed-eye.svg" alt="closed eye" />
+        <img src="assets/closed-eye.svg" alt="closed eye" />
       </div>
       </div>
     </>
