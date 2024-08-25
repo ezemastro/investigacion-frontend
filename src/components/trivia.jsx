@@ -11,27 +11,22 @@ export default function Trivia() {
   const [categories, setCategories] = useState([])
   const [currentQuestion, setCurrentQuestion] = useState({})
   const [nextQuestion, setNextQuestion] = useState({})
-  const [played, setPlayed] = useState([])
-  const [nPlayed, setNPlayed] = useState(0)
   const [rndSortOptions, setRndSortOptions] = useState([])
   const [secondsLeft, setSecondsLeft] = useState(TIME_PER_QUESTION)
-  const [toSend, setToSend] = useState([])
-  const [bonusCategory, setBonusCategory] = useState(undefined)
+  const [pickingBonusCat, setPickingBonusCat] = useState(false)
   const timerRef = useRef(null)
   const navigate = useNavigate()
 
-  const fetching = async (nPlayedUpdated) => {
-
+  const fetching = async ({fetchThisN}) => {
     let cats
-    if(!categories.length > 0) {
+    if(categories.length === 0) {
       //set categories
       const catsRes = await fetch(BACKEND_URL + '/trivia/categories', { method: 'GET', credentials: 'include' })
       if (!catsRes.ok) return
       cats = await catsRes.json()
       setCategories(cats)
     } else cats = categories
-    const fetchThisN = nPlayedUpdated ?? 0
-
+    fetchThisN = fetchThisN ?? 0
     const question1Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN % cats.length].category_id}`, { method: 'POST', credentials: 'include', 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({played})
@@ -40,7 +35,6 @@ export default function Trivia() {
     const question1 = await question1Res.json()
     setCurrentQuestion(question1)
     setRndSortOptions([...question1.options].sort(() => Math.random() - 0.5))
-    startTimer({nPlayedUpdated: fetchThisN})
     const question2Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN + 1 % cats.length].category_id}`, { method: 'POST', credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({played})
@@ -52,96 +46,15 @@ export default function Trivia() {
   useEffect(() => {
     //inicar
     if (categories.length > 0) return
-    fetching()
+    fetching({})
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const handleClick = (e) => {
-    if (e.target.classList.contains('disabled') || e.target.classList.contains('correct') || e.target.classList.contains('incorrect')) return
-    //agregar a played
-    const playedI = played.findIndex(pl => pl.category_id === currentQuestion.category_id)
-    if(playedI === -1){
-      setPlayed(played =>[...played, { category_id: currentQuestion.category_id, questions_id: [currentQuestion.question_id] }])
-    } else setPlayed(pd => {
-      pd[playedI].questions_id.push(currentQuestion.question_id)
-      return pd
-    })
-    //comprobar
-    if (currentQuestion.options.findIndex(option => option === e.target.textContent) === 0){
-      //corecta !
-      e.target.classList.add('correct')
-      document.querySelectorAll('button').forEach(btn => btn !== e.target && btn.classList.add('disabled'))
-      setToSend([...toSend, {question_id: currentQuestion.question_id, is_correct: true, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}])
-    } else {
-      //incorrecta
-      e.target.classList.add('incorrect')
-      document.querySelectorAll('button').forEach(btn => {
-        if(btn.textContent === currentQuestion.options[0]) return btn.classList.add('correct')
-        if(btn === e.target) return 
-        btn.classList.add('disabled')
-      })
-      setToSend([...toSend, {question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}])
-    }
-    //siguiente - copair esto
-    setNPlayed(nPlayed => nPlayed + 1)
-    const nPlayedUpdated = nPlayed + 1
-    if (timerRef.current) clearInterval(timerRef.current)
-    setTimeout(() => {
-      if (nPlayedUpdated === (AMMOUNT_OF_QUESTIONS - 1)) {
-        //bonus
-        setBonusCategory('choosing')
-      } else if (nPlayedUpdated >= AMMOUNT_OF_QUESTIONS) {
-        //send results
-      } else getNewQuestion({nPlayedUpdated})
-    }, 1500)
-  }
-  const getNewQuestion = async ({nPlayedUpdated, findThisCategoryForNow})=>{
-      document.querySelectorAll('button').forEach(btn => {
-        btn.classList.remove('correct')
-        btn.classList.remove('incorrect')
-        btn.classList.remove('disabled')
-      })
-      setRndSortOptions([...nextQuestion.options].sort(() => Math.random() - 0.5))
-      if(!findThisCategoryForNow) {
-        console.log("no hay find this category for now")
-        console.log(findThisCategoryForNow)
-        if (nextQuestion) setCurrentQuestion(nextQuestion)
-        else fetching(nPlayedUpdated)
-        setNextQuestion({})
-      }
-      //fetch
-      let newQuestion = await fetch(BACKEND_URL + `/trivia?category_id=${findThisCategoryForNow ?? categories[(categories.findIndex(cat => cat.category_id === currentQuestion.category_id) + 2) % categories.length].category_id}`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          played
-        })
-      })
-      if(!newQuestion.ok) return //error
-      newQuestion = await newQuestion.json()
-      console.log(newQuestion)
-      if(findThisCategoryForNow !== undefined) setCurrentQuestion(newQuestion)
-      else setNextQuestion(newQuestion)
-      
-      startTimer({nPlayedUpdated})
-    }
-  const handleCategoryClick = (e) => {
-    let findThisCategoryForNow = categories.find(cat => cat.category_name === e.target.textContent).category_id
-    setBonusCategory(findThisCategoryForNow)
-    document.querySelectorAll('.t-category-btn').forEach(btn => btn.removeEventListener('click', handleCategoryClick))
-    getNewQuestion({findThisCategoryForNow})
-  }
+  //-----------------------
+  const [nPlayed, setNPlayed] = useState(0)
   useEffect(() => {
-    if (bonusCategory !== 'choosing') return
-    document.querySelectorAll('.t-category-btn').forEach(btn => {
-      btn.addEventListener('click', handleCategoryClick)
-    })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[bonusCategory])
-
-  const startTimer = ({nPlayedUpdated}) => {
     if (timerRef.current) clearInterval(timerRef.current)
+    //start timer
     setSecondsLeft(TIME_PER_QUESTION)
     let seconds = TIME_PER_QUESTION
     timerRef.current = setInterval(() => {
@@ -150,61 +63,144 @@ export default function Trivia() {
         setSecondsLeft(seconds)
       } else {
         //se te acabo el tiempo
+        handleAnswerSubmit({ currentQuestion })
         setSecondsLeft(0)
-        document.querySelectorAll('button').forEach(btn => {
-          if(btn.textContent === currentQuestion.options[0]) return btn.classList.add('correct')
-          btn.classList.add('disabled')
-        })
-        setToSend([...toSend, {question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}])
-        
-        if (timerRef.current) clearInterval(timerRef.current)
-        setTimeout(() => {
-          if (nPlayedUpdated === (AMMOUNT_OF_QUESTIONS - 1)) {
-            //bonus
-            setBonusCategory('choosing')
-          } else if (nPlayedUpdated >= AMMOUNT_OF_QUESTIONS) {
-            //send results
-          } else getNewQuestion({nPlayedUpdated})
-        }, 1500)
       }
     }, 250)
-  }
-  // useEffect(() => {return () => clearInterval(timerRef.current)}, [])
-  useEffect(() => {
-    if (nPlayed >= AMMOUNT_OF_QUESTIONS){
-      console.log({
-        results: toSend,
-        userInfo: {
-          bonus_category_id: bonusCategory
-        }})
-      localStorage.setItem('precition', `${played.filter(pl => pl.is_correct).length}`)
-      fetch(BACKEND_URL + '/trivia/send', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          results: toSend,
-          userInfo: {
-            bonus_category_id: bonusCategory
-          }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentQuestion])
+  
+  let toSend = []
+  let played = []
+  const handleAnswerSubmit = ({ e, currentQuestion }) => {
+    //si viene de un boton
+    if(e){
+      if (currentQuestion.options.findIndex(option => option === e.target.textContent) === 0){
+        //corecta !
+        e.target.classList.add('correct')
+        document.querySelectorAll('button').forEach(btn => btn !== e.target && btn.classList.add('disabled'))
+        toSend = [...toSend, {question_id: currentQuestion.question_id, is_correct: true, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}]
+      } else {
+        //incorrecta
+        e.target.classList.add('incorrect')
+        document.querySelectorAll('button').forEach(btn => {
+          if(btn.textContent === currentQuestion.options[0]) return btn.classList.add('correct')
+          if(btn === e.target) return 
+          btn.classList.add('disabled')
         })
-      }).then(res => {
-        if(!res.ok) return //error
-        navigate('/gracias')
+        toSend =[...toSend, {question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}]
+      }
+    } else {
+      //si no viene de un boton
+      document.querySelectorAll('button').forEach(btn => {
+        if(btn.textContent == currentQuestion.options[0]) return btn.classList.add('correct')
+        btn.classList.add('disabled')
       })
+      //preparar set to send
+      toSend = ([...toSend, {question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)}])
     }
 
-  }, [bonusCategory, nPlayed, navigate, played, toSend])
+    //guardar played
+    addToPlayed(currentQuestion)
+    //eliminar intervalo
+    if (timerRef.current) clearInterval(timerRef.current)
+    //Sumar nPlayed
+    setNPlayed(nPlayed => nPlayed + 1)
+  }
+  const addToPlayed = (currentQuestion) => {
+    const playedI = played.findIndex(pl => pl.category_id === currentQuestion.category_id)
+    if (playedI === -1) played.push({ category_id: currentQuestion.category_id, questions_id: [currentQuestion.question_id] })
+    else played[playedI].questions_id.push(currentQuestion.question_id)
+  }
+
+  useEffect(() => {
+    if (nPlayed <= 0) return
+    //esperar para siguiente pregunta
+    setTimeout(() => {
+      if (nPlayed === (AMMOUNT_OF_QUESTIONS - 1)) {
+        //bonus
+        setPickingBonusCat(true)
+      } else if (nPlayed >= AMMOUNT_OF_QUESTIONS) {
+        //mandar resultados
+        fetch(BACKEND_URL + '/trivia/send', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            results: toSend,
+            userInfo: {
+              bonus_category_id: bonusCategory
+            }
+          })
+        }).then(res => {
+          if(!res.ok) return //error
+          navigate('/gracias')
+        })
+      } else {
+        getNewQuestion()
+      }
+    }, 1500)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nPlayed])
+
+
+  const getNewQuestion = async (fetchThis) => {
+    //eliminar buton calses
+    document.querySelectorAll('button').forEach(btn => {
+      btn.classList.remove('correct')
+      btn.classList.remove('incorrect')
+      btn.classList.remove('disabled')
+    })
+
+    if(fetchThis === undefined) {
+      setCurrentQuestion(nextQuestion)
+      setRndSortOptions([...nextQuestion.options].sort(() => Math.random() - 0.5))
+    }
+
+    //fetch
+    let newQuestion = await fetch(BACKEND_URL + `/trivia?category_id=${fetchThis ?? categories[(categories.findIndex(cat => cat.category_id === currentQuestion.category_id) + 2) % categories.length].category_id}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        played
+      })
+    })
+    if(!newQuestion.ok) return //error
+    newQuestion = await newQuestion.json()
+    if(fetchThis !== undefined) {
+      setCurrentQuestion(newQuestion)
+      setRndSortOptions([...newQuestion.options].sort(() => Math.random() - 0.5))
+    } else {
+      setNextQuestion(newQuestion)
+    }
+  }
+
+
+  const handleClick = (e) => {
+    if (e.target.classList.contains('disabled') || e.target.classList.contains('correct') || e.target.classList.contains('incorrect')) return
+    handleAnswerSubmit({ e, currentQuestion })
+  }
+
+  //pregunta bonus
+  let bonusCategory = undefined
+  const handleCategoryClick = (e) => {
+    let selectedCategory = categories.find(cat => cat.category_name === e.target.textContent).category_id
+    setPickingBonusCat(false)
+    bonusCategory = selectedCategory
+    getNewQuestion(selectedCategory)
+  }
+  //-----------------------
 
   return (
     <div className="main-cont t-main-cont main-bkgc">
       <header className="t-header">
         <h1>Trivia de Conocimiento General</h1>
       </header>
-      <main className={`t-main secn-bkgc ${bonusCategory === 'choosing' ? 'choosing' : ''}`}>
-        {currentQuestion.question_text && bonusCategory !== 'choosing' && (
+      <main className={`t-main secn-bkgc ${pickingBonusCat ? 'choosing' : ''}`}>
+        {currentQuestion?.question_text && !pickingBonusCat && (
           <>
             <h3>Tema: <span>{categories.find(cat => cat.category_id === currentQuestion.category_id).category_name}</span></h3>
             <section className="t-question-cont">
@@ -233,14 +229,14 @@ export default function Trivia() {
             
           </>
         )}
-        {bonusCategory === 'choosing' && (
+        {pickingBonusCat && (
           <>
             <h4>Última pregunta</h4>
             <h2>Elija una categoría</h2>
             <div className="t-category-btn-cont">
               {categories.map((cat, index) => {
                 return (
-                  <button className="t-category-btn"key={index}>{cat.category_name}</button>
+                  <button className="t-category-btn" key={index} onClick={handleCategoryClick}>{cat.category_name}</button>
                 )
               })}
             </div>
