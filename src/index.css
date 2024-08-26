@@ -47,7 +47,8 @@ h1{
   min-height: 100dvh;
 }
 .error{
-  color: #ee4444;
+  font-weight: 400;
+  color: #842323;
   position: absolute;
 }
 
