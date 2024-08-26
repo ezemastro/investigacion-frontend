@@ -53,18 +53,6 @@
   justify-content: center;
 }
 
-.correct{
-  background-color: #157015;
-  pointer-events: none;
-}
-.incorrect{
-  background-color: #7e1313;
-  pointer-events: none;
-}
-.disabled{
-  opacity: 0.5;
-  pointer-events: none;
-}
 
 @media screen and (max-width: 600px) {
   .h-main-cont h1{
