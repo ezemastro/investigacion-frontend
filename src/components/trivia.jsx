@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { BACKEND_URL, AMMOUNT_OF_QUESTIONS, TIME_PER_QUESTION } from '../constants'
 import '../css/trivia.css'
+import '../index.css'
 import confetti from "canvas-confetti"
 import Loading from "./loading"
 
