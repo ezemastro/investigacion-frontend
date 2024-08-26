@@ -188,6 +188,21 @@
     max-height: none;
   }
 }
+
+
+.correct{
+  background-color: #8ad686;
+  pointer-events: none;
+}
+.incorrect{
+  background-color: #ca6666;
+  pointer-events: none;
+}
+.disabled{
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 @media screen and (max-width: 500px) {
   .t-main h2{
     font-size: 2rem;
