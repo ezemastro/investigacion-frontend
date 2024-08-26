@@ -73,3 +73,15 @@
   color: #8D99AE;
   text-wrap: wrap;
 }
+
+.e-main-cont{
+  padding: 10px 10px;
+}
+@media screen and (max-width: 600px) {
+  .e-inputs-cont{
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 20px;
+  }
+  
+}

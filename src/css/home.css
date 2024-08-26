@@ -65,3 +65,17 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+@media screen and (max-width: 600px) {
+  .h-main-cont h1{
+    font-size: 2rem;
+  }
+  .h-main-cont h2{
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+  .h-section.n2{
+    justify-content: flex-start;
+    padding: 30px 5px;
+  }
+}

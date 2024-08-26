@@ -14,14 +14,14 @@
   max-height: 200px;
 }
 .t-main{
-  flex-grow: 2;
-  flex-basis: 250px;
-  max-height: ;
+  flex-grow: 1;
+  flex-basis: content;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   position: relative;
+  max-height: 400px;
 }
 .t-footer{
   flex-grow: 2;
@@ -41,16 +41,16 @@
 .t-question-cont{
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   flex-grow: 1;
   width: 80%;
-  max-width: 700px;
+  max-width: 900px;
   gap: 30px;
-  padding: 30px 7px;
+  padding: 50px 40px 75px;
 }
 .t-question-cont>h2{
-  font-size: 2rem;
+  font-size: 2.5rem;
 }
 .t-btn-cont{
   display: flex;
@@ -170,4 +170,35 @@
   flex-wrap: wrap;
   width: 100%;
   max-width: 600px;
+}
+
+@media screen and (max-width: 800px) {
+  .t-progress-cont{
+    width: 100%;
+    padding: 0 80px;
+  }
+  .t-progress{
+    width: 100%;
+    max-width: none;
+  }
+  .t-timer{
+    right: 20px;
+  }
+  .t-main{
+    max-height: none;
+  }
+}
+@media screen and (max-width: 500px) {
+  .t-main h2{
+    font-size: 2rem;
+  }
+  .t-main button{
+    font-size: 1.25rem;
+  }
+  .t-timer{
+    right: 0;
+  }
+  .t-question-cont{
+    width: 90%;
+  }
 }

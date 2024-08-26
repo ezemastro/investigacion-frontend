@@ -22,7 +22,7 @@ export default function Gracias() {
         }
         clearInterval(timer)
         confetti()
-        return targetScore
+        return Math.round(targetScore)
       })
     }, 3000 / targetScore)
     return () => clearInterval(timer)

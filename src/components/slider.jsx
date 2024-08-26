@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react'
 
 export default function Slider({ semiSubmit, defAnswer, currentQuestion }) {
@@ -11,29 +10,49 @@ export default function Slider({ semiSubmit, defAnswer, currentQuestion }) {
 
   useEffect(() => {
     setPosition(defAnswer === undefined ? 50 : defAnswer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentQuestion])
 
-  const handleMouseMove = (e) => {
-    const offsetX = e.clientX - sliderBoundingClientRect.left
+  const handleMove = (clientX) => {
+    const offsetX = clientX - sliderBoundingClientRect.left
     const newPosition = Math.max(0, Math.min(offsetX, sliderBoundingClientRect.width))
     setPosition(newPosition / sliderBoundingClientRect.width * 100)
   }
+
+  const handleMouseMove = (e) => {
+    handleMove(e.clientX)
+  }
+
+  const handleTouchMove = (e) => {
+    handleMove(e.touches[0].clientX)
+  }
+
   const handleMouseDown = (e) => {
-    setPosition(Math.max(0, Math.min(e.clientX - sliderBoundingClientRect.left, sliderBoundingClientRect.width)) / sliderBoundingClientRect.width * 100)
+    handleMove(e.clientX)
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)
   }
-const handleMouseUp = (e) => {
+
+  const handleTouchStart = (e) => {
+    handleMove(e.touches[0].clientX)
+    document.addEventListener('touchmove', handleTouchMove)
+    document.addEventListener('touchend', handleTouchEnd)
+  }
+
+  const handleMouseUp = (e) => {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
-    semiSubmit(Math.max(0, Math.min(e.clientX - sliderBoundingClientRect.left, sliderBoundingClientRect.width)) / sliderBoundingClientRect.width * 100)
+    semiSubmit(position)
   }
+
+  const handleTouchEnd = (e) => {
+    document.removeEventListener('touchmove', handleTouchMove)
+    document.removeEventListener('touchend', handleTouchEnd)
+    semiSubmit(position)
+  }
+
   return (
-    <>
-    <div id='slider' onMouseDown={handleMouseDown}>
-      <div className="slider-thumb" style={{ left: `${position}%`, backgroundColor: defAnswer === undefined ? '#EDF2F4' : '#2B2D42'}}></div>
+    <div id='slider' onMouseDown={handleMouseDown} onTouchStart={handleTouchStart}>
+      <div className="slider-thumb" style={{ left: `${position}%`, backgroundColor: defAnswer === undefined ? '#EDF2F4' : '#2B2D42' }}></div>
     </div>
-    </>
   )
 }

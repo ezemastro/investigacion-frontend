@@ -22,11 +22,6 @@ export default function Encuesta() {
     startLoading()
     fetch(BACKEND_URL + '/survey', { method: 'GET', credentials: 'include' }).then(res => {
       stopLoading()
-      if (res.status >= 400) {
-        res.json().then( err => {
-          err?.redirect && redirect(err.redirect)
-        })
-      }
       if (res.ok) {
         res.json().then( q => {
           setQuestions(q)
@@ -37,6 +32,9 @@ export default function Encuesta() {
         })
       } else {
         setError(true)
+        res.json().then(err => {
+          err?.redirect && navigate(err.redirect)
+        })
       }
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
