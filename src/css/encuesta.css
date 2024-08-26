@@ -33,10 +33,13 @@
   align-items: center;
   padding: 20px;
   max-height: 400px;
+  gap: 20px;
 }
 .en-section.n1>h2{
   font-size: 2rem;
   margin-bottom: 20px;
+  line-height: 34px;
+  font-weight: 600;
 }
 .en-section.n2{
   flex-grow: 1;
@@ -117,6 +120,7 @@
   cursor: pointer;
   background-color: #EDF2F4;
   position: relative;
+  min-width: 100px;
 }
 #slider::before{
   content: '';
@@ -194,5 +198,14 @@
 @media screen and (max-width: 600px) {
   .en-section.n1{
     max-height: fit-content;
+  }
+}
+@media screen and (max-width: 500px) {
+  .en-section.n1>h2{
+    font-size: 1.5rem;
+    line-height: 25px;
+  }
+  .en-header h1{
+    font-size: 2rem;
   }
 }

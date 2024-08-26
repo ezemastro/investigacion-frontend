@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 export default function Slider({ semiSubmit, defAnswer, currentQuestion }) {
   const [position, setPosition] = useState(50)
   const [sliderBoundingClientRect, setSliderBoundingClientRect] = useState(undefined)
+  let positionUpdated
 
   useEffect(() => {
     setSliderBoundingClientRect(document.getElementById('slider').getBoundingClientRect())
@@ -16,6 +17,7 @@ export default function Slider({ semiSubmit, defAnswer, currentQuestion }) {
     const offsetX = clientX - sliderBoundingClientRect.left
     const newPosition = Math.max(0, Math.min(offsetX, sliderBoundingClientRect.width))
     setPosition(newPosition / sliderBoundingClientRect.width * 100)
+    positionUpdated = newPosition / sliderBoundingClientRect.width * 100
   }
 
   const handleMouseMove = (e) => {
@@ -41,13 +43,13 @@ export default function Slider({ semiSubmit, defAnswer, currentQuestion }) {
   const handleMouseUp = (e) => {
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
-    semiSubmit(position)
+    semiSubmit(positionUpdated)
   }
 
   const handleTouchEnd = (e) => {
     document.removeEventListener('touchmove', handleTouchMove)
     document.removeEventListener('touchend', handleTouchEnd)
-    semiSubmit(position)
+    semiSubmit(positionUpdated)
   }
 
   return (
