@@ -191,11 +191,11 @@
 
 
 .correct{
-  background-color: #8ad686;
+  background-color: #a7ee9a;
   pointer-events: none;
 }
 .incorrect{
-  background-color: #ca6666;
+  background-color: #ee9a9a;
   pointer-events: none;
 }
 .disabled{
