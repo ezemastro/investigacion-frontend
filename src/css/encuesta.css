@@ -24,7 +24,7 @@
   justify-content: flex-start;
 }
 .en-section.n1{
-  flex-grow: 1; /*1*/
+  flex-grow: 0; /*1*/
   flex-basis: content;
   max-height: fit-content;
   display: flex;
@@ -111,6 +111,7 @@
   width: 80%;
   max-width: 600px;
   position: relative;
+  min-height: 75px;
 }
 #slider{
   width: 100%;
@@ -197,7 +198,7 @@
 }
 @media screen and (max-width: 600px) {
   .en-section.n1{
-    max-height: fit-content;
+    max-height: none;
   }
 }
 @media screen and (max-width: 500px) {
@@ -207,5 +208,19 @@
   }
   .en-header h1{
     font-size: 2rem;
+  }
+  .en-section.n1{
+    padding: 20px 5px;
+  }
+  .slider-cont{
+    gap: 5px;
+  }
+}
+@media screen and (max-width: 400px) {
+  .slider-cont>label{
+    font-size: 0.8rem;
+  }
+  .slider-cont{
+    gap: 3px;
   }
 }

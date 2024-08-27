@@ -43,18 +43,17 @@ export default function Email() {
     fetch( BACKEND_URL + '/mail', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({email, age}),
     }).then(res => {
-      if (res.status >= 200 && res.status < 300){
+      res.json().then(resJn => {
+        if (resJn.id) localStorage.setItem('id', JSON.stringify(resJn.id))
         stopLoading()
-        console.log("navigating")
-        navigate('/encuesta')
-      }
-      else {
-        stopLoading()
-        setError(res.status)
-      }
+        if (!res.ok){
+          resJn?.redirect && navigate(resJn.redirect)
+          return setError(res.status)
+        }
+        if (res.ok) navigate('/encuesta')
+      })
     }).catch(err => {
       stopLoading()
       console.log(err)

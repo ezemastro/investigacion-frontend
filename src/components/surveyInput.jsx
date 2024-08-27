@@ -32,7 +32,7 @@ export default function SurveyInput({ question, semiSubmit, defAnswer, currentQu
     <>
       {response_type === "slider" && (
         <div className="slider-cont">
-    <span style={{position: "absolute", top: "-55px",left: "50%", width: "100%", textAlign: "center", transform: "translateX(-50%)", cursor: "default", opacity: defAnswer === undefined ? 1 : 0, transition: "all 0.5s ease-out"}}>*Arrastra el deslizador</span>
+    <span style={{position: "absolute", top: "-30px",left: "50%", width: "100%", textAlign: "center", transform: "translateX(-50%)", cursor: "default", opacity: defAnswer === undefined ? 1 : 0, transition: "all 0.5s ease-out"}}>*Arrastra el deslizador</span>
           <label>{options[0]}</label>
           <Slider semiSubmit={semiSubmit} defAnswer={defAnswer} currentQuestion={currentQuestion} />
           <label>{options[1]}</label>
