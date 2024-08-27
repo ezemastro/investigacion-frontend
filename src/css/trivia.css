@@ -192,15 +192,12 @@
 
 .correct{
   background-color: #a7ee9a;
-  pointer-events: none;
 }
 .incorrect{
   background-color: #ee9a9a;
-  pointer-events: none;
 }
 .disabled{
   opacity: 0.5;
-  pointer-events: none;
 }
 
 @media screen and (max-width: 500px) {
