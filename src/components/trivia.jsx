@@ -100,17 +100,26 @@ export default function Trivia() {
       if (currentQuestion.options.findIndex(option => option === e.target.textContent) === 0){
         //corecta !
         confetti()
+        setInterval(()=>{
+          document.querySelectorAll('button').forEach(btn => {
+            if(btn.textContent === currentQuestion.options[0]) return btn.classList.add('correct')
+            if(btn === e.target) return btn.classList.add('correct')
+            btn.classList.add('disabled')
+          })
+        },100)
         e.target.classList.add('correct')
         document.querySelectorAll('button').forEach(btn => btn !== e.target && btn.classList.add('disabled'))
         updatedToSend.push({question_id: currentQuestion.question_id, is_correct: true, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)})
       } else {
         //incorrecta
         e.target.classList.add('incorrect')
-        document.querySelectorAll('button').forEach(btn => {
-          if(btn.textContent === currentQuestion.options[0]) return btn.classList.add('correct')
-          if(btn === e.target) return 
-          btn.classList.add('disabled')
-        })
+        setInterval(()=>{
+          document.querySelectorAll('button').forEach(btn => {
+            if(btn.textContent === currentQuestion.options[0]) return btn.classList.add('correct')
+            if(btn === e.target) return btn.classList.add('incorrect')
+            btn.classList.add('disabled')
+          })
+        },100)
         updatedToSend.push({question_id: currentQuestion.question_id, is_correct: false, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)})
       }
     } else {
