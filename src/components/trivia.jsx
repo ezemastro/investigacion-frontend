@@ -29,7 +29,9 @@ export default function Trivia() {
     let cats
     if(categories.length === 0) {
       //set categories
-      const catsRes = await fetch(BACKEND_URL + '/trivia/categories', { method: 'GET', credentials: 'include' })
+      const stringedId = localStorage.getItem('id')
+      const id = stringedId ? JSON.parse(stringedId) : undefined
+      const catsRes = await fetch(BACKEND_URL + '/trivia/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({id})})
       if (!catsRes.ok) {
         catsRes.json().then(err => {
           err?.redirect && navigate(err.redirect)
@@ -39,7 +41,7 @@ export default function Trivia() {
       setCategories(cats)
     } else cats = categories
     fetchThisN = fetchThisN ?? 0
-    const question1Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN % cats.length].category_id}`, { method: 'POST', credentials: 'include', 
+    const question1Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN % cats.length].category_id}`, { method: 'POST',  
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({played: playedRef.current})
     })
@@ -151,14 +153,16 @@ export default function Trivia() {
       } else if (nPlayed >= AMMOUNT_OF_QUESTIONS) {
         //guardar en local storage
         localStorage.setItem('trivaScore', JSON.stringify(toSendRef.current.filter(t => t.is_correct === true).length) / AMMOUNT_OF_QUESTIONS * 100)
+        const stringedId = localStorage.getItem('id')
+        const id = stringedId ? JSON.parse(stringedId) : undefined
         //mandar resultados
         fetch(BACKEND_URL + '/trivia/send', {
           method: 'POST',
-          credentials: 'include',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
+            id,
             results: toSendRef.current,
             userInfo: {
               bonus_category_id: bonusCategoryRef.current
@@ -219,7 +223,6 @@ export default function Trivia() {
     if(fetchThis !== undefined) startLoading()
     let newQuestion = await fetch(BACKEND_URL + `/trivia?category_id=${fetchThis ?? categories[(categories.findIndex(cat => cat.category_id === currentQuestion.category_id) + 2) % categories.length].category_id}`, {
       method: 'POST',
-      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         played: playedRef.current

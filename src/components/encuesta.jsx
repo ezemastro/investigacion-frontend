@@ -20,7 +20,9 @@ export default function Encuesta() {
   
   useEffect(() => {
     startLoading()
-    fetch(BACKEND_URL + '/survey', { method: 'GET', credentials: 'include' }).then(res => {
+    const stringedId = localStorage.getItem('id')
+    const id = stringedId ? JSON.parse(stringedId) : undefined
+    fetch(BACKEND_URL + '/survey', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) }).then(res => {
       stopLoading()
       if (res.ok) {
         res.json().then( q => {
@@ -31,11 +33,14 @@ export default function Encuesta() {
           })))
         })
       } else {
-        setError(true)
         res.json().then(err => {
           err?.redirect && navigate(err.redirect)
         })
+        return setError(true)
       }
+    }).catch(err => {
+      stopLoading()
+      console.log(err)
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -64,25 +69,24 @@ export default function Encuesta() {
   const handleSend = () => {
     if (!ready) return
     startLoading()
-    fetch(BACKEND_URL + '/survey', {
+    const stringedId = localStorage.getItem('id')
+    const id = stringedId ? JSON.parse(stringedId) : undefined
+    fetch(BACKEND_URL + '/survey/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include',
-      body: JSON.stringify(questionToSend)
+      body: JSON.stringify({ id, survey: questionToSend})
     }).then(res => {
-      if (res.status >= 400) {
+      stopLoading()
+      if (!res.ok) {
         res.json().then( err => {
           err?.redirect && redirect(err.redirect)
         })
-      }
-      if (res.ok) return navigate('/trivia')
+      } else navigate('/trivia')
+    }).catch((err) => {
       stopLoading()
-      navigate('/')
-    }).catch(() => {
-      stopLoading()
-      navigate('/')
+      console.log(err)
     })
   }
   return (
