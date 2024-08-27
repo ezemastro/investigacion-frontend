@@ -104,7 +104,7 @@ export default function Trivia() {
   document.querySelectorAll('button').forEach(btn => {
     if (btn !== e.target) btn.classList.add('disabled')
   })
-        console.log(e.target.classList.contains('correct')
+        console.log(e.target.classList.contains('correct'))
         updatedToSend.push({question_id: currentQuestion.question_id, is_correct: true, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)})
       } else {
         //incorrecta
