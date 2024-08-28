@@ -102,8 +102,8 @@ export default function Trivia() {
         confetti()
         e.target.classList.add('correct')
   document.querySelectorAll('button').forEach(btn => {
-    if (btn.textContent === currentQuestion.options[0]) return btn.classList.add('correct')
-    if (btn !== e.target) btn.classList.add('disabled')
+    if (btn.textContent === currentQuestion.options[0]) btn.classList.add('correct')
+    else if (btn !== e.target) btn.classList.add('disabled')
   })
         console.log(e.target.classList.contains('correct'))
         updatedToSend.push({question_id: currentQuestion.question_id, is_correct: true, response_time: Math.round(TIME_PER_QUESTION-secondsLeft)})
