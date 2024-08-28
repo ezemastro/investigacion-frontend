@@ -55,7 +55,7 @@ export default function Trivia() {
     const question1 = await question1Res.json()
     setCurrentQuestion(question1)
     setRndSortOptions([...question1.options].sort(() => Math.random() - 0.5))
-    const question2Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN + 1 % cats.length].category_id}`, { method: 'POST', credentials: 'include',
+    const question2Res = await fetch(BACKEND_URL + `/trivia?category_id=${cats[fetchThisN + 1 % cats.length].category_id}`, { method: 'POST', 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({played: playedRef.current})
     })
