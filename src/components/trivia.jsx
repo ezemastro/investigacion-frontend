@@ -253,7 +253,18 @@ export default function Trivia() {
   }
 
   //pregunta bonus
+  let touchHandled = false
   const handleCategoryClick = (e) => {
+    if (!touchHandled){
+    let selectedCategory = categories.find(cat => cat.category_name === e.target.textContent).category_id
+    setPickingBonusCat(false)
+    setBonusCategory(selectedCategory)
+    getNewQuestion(selectedCategory)
+    }
+    touchHandled = false
+  }
+  const handleTouch = (e) => {
+    touchHandled = true
     let selectedCategory = categories.find(cat => cat.category_name === e.target.textContent).category_id
     setPickingBonusCat(false)
     setBonusCategory(selectedCategory)
@@ -278,13 +289,13 @@ export default function Trivia() {
                 <div className="firsts">
                   {rndSortOptions.map((option, index) => { if (index < 2 || option === undefined || option === null) return 
                   return (
-                    <button key={currentQuestion.question_id * 10 + index} onClick={handleClick}>{option}</button>
+                    <button key={currentQuestion.question_id * 10 + index} onClick={handleClick} onTouchStart={handleTouch}>{option}</button>
                   )})}
                 </div>
                 <div className="seconds">
                   {rndSortOptions.map((option, index) => { if (index > 1 || option === undefined || option === null) return 
                   return (
-                    <button key={currentQuestion.question_id * 10 + index} onClick={handleClick}>{option}</button>
+                    <button key={currentQuestion.question_id * 10 + index} onClick={handleClick} onTouchStart={handleTouch}>{option}</button>
                   )})}
                 </div>
               </div>
